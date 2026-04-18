@@ -20,7 +20,7 @@ const STEPS = [
 
 export default function App() {
   const [step, setStep] = useState(0)
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('sdtm_openai_key') || '')
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('sdtm_kimi_key') || '')
   const [parsedData, setParsedData] = useState(null)   // { fileName, columns, rows }
   const [profile, setProfile] = useState(null)          // array of col profiles
   const [llmResult, setLlmResult] = useState(null)      // raw LLM JSON
