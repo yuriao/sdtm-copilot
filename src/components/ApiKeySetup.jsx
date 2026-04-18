@@ -11,28 +11,28 @@ export default function ApiKeySetup({ apiKey, setApiKey, onNext }) {
       setError('API key must start with "sk-"')
       return
     }
-    localStorage.setItem('sdtm_openai_key', trimmed)
+    localStorage.setItem('sdtm_kimi_key', trimmed)
     setApiKey(trimmed)
     setError('')
     onNext()
   }
 
   const handleClear = () => {
-    localStorage.removeItem('sdtm_openai_key')
+    localStorage.removeItem('sdtm_kimi_key')
     setApiKey('')
     setInput('')
   }
 
   return (
     <div className="card">
-      <h2>Step 1 — OpenAI API Key</h2>
+      <h2>Step 1 — Kimi API Key</h2>
       <p style={{ color: '#555', marginBottom: 18, fontSize: '0.93rem' }}>
-        Your API key is stored only in your browser's localStorage and never sent anywhere except directly to OpenAI.
+        Your API key is stored only in your browser's localStorage and sent directly to Kimi (Moonshot AI). It never touches any other server.
       </p>
 
       <div style={{ marginBottom: 14 }}>
         <label style={{ display: 'block', fontWeight: 600, marginBottom: 6, color: '#1a3a5c' }}>
-          OpenAI API Key
+          Kimi (Moonshot AI) API Key
         </label>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
@@ -63,11 +63,11 @@ export default function ApiKeySetup({ apiKey, setApiKey, onNext }) {
       </div>
 
       <div style={{ marginTop: 20, padding: 14, background: '#f0f4f8', borderRadius: 6, fontSize: '0.85rem', color: '#555' }}>
-        <strong>How to get an API key:</strong> Visit{' '}
-        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" style={{ color: '#1a3a5c' }}>
-          platform.openai.com/api-keys
+        <strong>How to get a Kimi API key:</strong> Visit{' '}
+        <a href="https://platform.moonshot.cn/console/api-keys" target="_blank" rel="noreferrer" style={{ color: '#1a3a5c' }}>
+          platform.moonshot.cn/console/api-keys
         </a>{' '}
-        → Create new secret key. The app uses <strong>gpt-4o-mini</strong> for cost efficiency.
+        → Create new API key. The app uses <strong>moonshot-v1-8k</strong> (Kimi's fast inference model).
       </div>
     </div>
   )
