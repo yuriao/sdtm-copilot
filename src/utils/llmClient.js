@@ -2,8 +2,9 @@ const SYSTEM_PROMPT = `You are an expert clinical data manager specializing in C
 {"domain":"DM|AE|LB","domain_confidence":"high|medium|low","domain_reasoning":"...","mappings":[{"source_column":"...","sdtm_variable":"...or null","confidence":"high|medium|low","explanation":"...","ambiguity_note":"..."}],"missing_required":["..."],"suggestions":"..."}`
 
 /**
- * Call OpenAI GPT-4o-mini with the column profile and get SDTM mapping suggestions.
- * @param {string} apiKey - OpenAI API key
+ * Call Kimi (Moonshot AI) with the column profile and get SDTM mapping suggestions.
+ * Kimi uses an OpenAI-compatible API at https://api.moonshot.cn/v1
+ * @param {string} apiKey - Moonshot API key (starts with sk-)
  * @param {Array} profile - column profiles from profiler.js
  * @param {string} fileName - original file name for context
  * @returns {Object} parsed JSON response from LLM
@@ -20,14 +21,14 @@ ${schemaDescription}
 
 Please suggest SDTM mappings for this dataset. Identify the most likely domain (DM, AE, or LB) and map each source column to its corresponding SDTM variable (or null if no mapping). Return ONLY valid JSON.`
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'moonshot-v1-8k',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userMessage },
@@ -40,7 +41,7 @@ Please suggest SDTM mappings for this dataset. Identify the most likely domain (
   if (!response.ok) {
     const errData = await response.json().catch(() => ({}))
     const msg = errData?.error?.message || `HTTP ${response.status}`
-    throw new Error(`OpenAI API error: ${msg}`)
+    throw new Error(`Kimi API error: ${msg}`)
   }
 
   const data = await response.json()
