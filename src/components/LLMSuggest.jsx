@@ -39,13 +39,36 @@ export default function LLMSuggest({ apiKey, profile, parsedData, llmResult, set
     <div className="card">
       <h2>Step 4 — LLM Mapping Suggestions</h2>
       <p style={{ color: '#555', marginBottom: 18, fontSize: '0.93rem' }}>
-        GPT-4o-mini will analyze your column schema and suggest SDTM variable mappings for DM, AE, or LB domains.
+        Kimi will analyze your column schema and suggest SDTM variable mappings for DM, AE, or LB domains.
       </p>
+
+      {/* If we already have a result, show a skip banner */}
+      {llmResult && (
+        <div style={{
+          background: '#eafaf1',
+          border: '1px solid #a9dfbf',
+          borderRadius: 6,
+          padding: '10px 14px',
+          marginBottom: 14,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 10,
+        }}>
+          <span style={{ fontSize: '0.9rem', color: '#1e8449' }}>
+            ✓ AI evaluation already complete — domain <strong>{llmResult.domain}</strong>, {llmResult.mappings?.length} mappings cached.
+          </span>
+          <button className="btn btn-primary" onClick={onNext}>
+            Skip to Review →
+          </button>
+        </div>
+      )}
 
       {!llmResult && (
         <button className="btn btn-primary" onClick={handleSuggest} disabled={loading}>
           {loading && <span className="loading-spinner" />}
-          {loading ? 'Calling OpenAI…' : '🤖 Get AI Suggestions'}
+          {loading ? 'Calling Kimi…' : '🤖 Get AI Suggestions'}
         </button>
       )}
 
@@ -58,7 +81,7 @@ export default function LLMSuggest({ apiKey, profile, parsedData, llmResult, set
             border: '1px solid #c8d6e5',
             borderRadius: 6,
             padding: 16,
-            marginTop: 16,
+            marginTop: 8,
             marginBottom: 16,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
