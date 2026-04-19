@@ -24,11 +24,37 @@ export default function App() {
   const [parsedData, setParsedData] = useState(null)   // { fileName, columns, rows }
   const [profile, setProfile] = useState(null)          // array of col profiles
   const [llmResult, setLlmResult] = useState(null)      // raw LLM JSON
-  const [mappings, setMappings] = useState([])           // [{source_column, sdtm_variable, confidence, explanation, status}]
+  const [mappings, setMappings] = useState([])           // [{source_column, sdtm_variable, ...}]
   const [validationResults, setValidationResults] = useState(null)
 
   const goNext = () => setStep(s => Math.min(s + 1, STEPS.length - 1))
   const goBack = () => setStep(s => Math.max(s - 1, 0))
+
+  // Jump to any previously completed step.
+  // If jumping to step 3 (LLM Suggest) and llmResult already exists, skip to step 4.
+  const jumpTo = (targetStep) => {
+    if (targetStep === 3 && llmResult) {
+      setStep(4)
+    } else {
+      setStep(targetStep)
+    }
+  }
+
+  // Which steps can the user jump to?
+  // A step is jumpable if the required data for it is already available.
+  const getJumpable = () => {
+    const jumpable = []
+    if (step > 0) jumpable.push(0)                       // API Key — always
+    if (step > 1) jumpable.push(1)                       // Upload — if we've passed it
+    if (step > 2 && parsedData) jumpable.push(2)         // Profile
+    if (step > 3 && profile) {
+      // LLM Suggest: if llmResult exists, clicking goes to Review (handled in jumpTo)
+      jumpable.push(3)
+    }
+    if (step > 4 && mappings.length > 0) jumpable.push(4) // Review
+    if (step > 5 && validationResults) jumpable.push(5)   // Validate
+    return jumpable
+  }
 
   return (
     <div>
@@ -39,7 +65,12 @@ export default function App() {
       </header>
 
       <div className="app-wrapper">
-        <StepIndicator steps={STEPS} current={step} />
+        <StepIndicator
+          steps={STEPS}
+          current={step}
+          onJump={jumpTo}
+          jumpable={getJumpable()}
+        />
 
         {step === 0 && (
           <ApiKeySetup apiKey={apiKey} setApiKey={setApiKey} onNext={goNext} />
