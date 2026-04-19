@@ -94,3 +94,52 @@ export function exportAuditLog(mappings, profile, validationResults, llmResult) 
   }
   downloadFile(JSON.stringify(log, null, 2), 'sdtm_audit_log.json', 'application/json')
 }
+
+/**
+ * Export the original dataset with accepted columns renamed to their SDTM variable names.
+ * - Accepted mappings: source column header replaced with SDTM variable name
+ * - Pending/rejected columns: appended at the end with original names (prefixed with UNMAPPED_)
+ *   so no data is silently lost
+ */
+export function exportMappedData(parsedData, mappings, domain) {
+  if (!parsedData?.rows?.length) return
+
+  // Build lookup: source_column → sdtm_variable (accepted only)
+  const acceptedMap = {}
+  mappings.forEach(m => {
+    if (m.status === 'accepted' && m.sdtm_variable) {
+      acceptedMap[m.source_column] = m.sdtm_variable
+    }
+  })
+
+  // Determine column order: SDTM-mapped first, then unmapped with prefix
+  const originalCols = parsedData.columns || Object.keys(parsedData.rows[0] || {})
+  const sdtmCols = []       // new SDTM header names for accepted cols
+  const unmappedCols = []   // original names for non-accepted cols
+
+  originalCols.forEach(col => {
+    if (acceptedMap[col]) {
+      sdtmCols.push(col)
+    } else {
+      unmappedCols.push(col)
+    }
+  })
+
+  // Build final column order and header row
+  const orderedCols = [...sdtmCols, ...unmappedCols]
+  const headerRow = orderedCols.map(col => acceptedMap[col] || `UNMAPPED_${col}`)
+
+  // Build data rows with renamed headers
+  const csvLines = [headerRow.join(',')]
+  parsedData.rows.forEach(row => {
+    const line = orderedCols.map(col => {
+      const val = row[col] ?? ''
+      const s = String(val).replace(/"/g, '""')
+      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s
+    }).join(',')
+    csvLines.push(line)
+  })
+
+  const baseName = (parsedData.fileName || 'dataset').replace(/\.[^.]+$/, '')
+  downloadFile(csvLines.join('\n'), `${baseName}_sdtm_${domain || 'mapped'}.csv`, 'text/csv')
+}
