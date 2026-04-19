@@ -1,5 +1,5 @@
 import React from 'react'
-import { exportMappingCSV, exportMappingJSON, exportAuditLog } from '../utils/exporter'
+import { exportMappingCSV, exportMappingJSON, exportAuditLog, exportMappedData } from '../utils/exporter'
 
 export default function ExportPanel({ mappings, llmResult, profile, parsedData, validationResults, onBack }) {
   const domain = llmResult?.domain || 'unknown'
@@ -28,18 +28,34 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
       </div>
 
       <div className="export-btns">
+        {/* Mapped Data CSV — new */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
           <button
             className="btn btn-primary"
-            onClick={() => exportMappingCSV(mappings, domain)}
+            onClick={() => exportMappedData(parsedData, mappings, domain)}
+            disabled={accepted === 0}
           >
-            📥 Download Mapping CSV
+            🗂 Download Mapped Data CSV
           </button>
           <div style={{ fontSize: '0.78rem', color: '#7f8c8d' }}>
-            Accepted mappings: source → SDTM variable with confidence scores
+            Original dataset with accepted columns renamed to SDTM variable names; unmapped columns preserved with <code>UNMAPPED_</code> prefix
           </div>
         </div>
 
+        {/* Mapping spec CSV */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => exportMappingCSV(mappings, domain)}
+          >
+            📥 Download Mapping Spec CSV
+          </button>
+          <div style={{ fontSize: '0.78rem', color: '#7f8c8d' }}>
+            Mapping specification: source → SDTM variable with confidence scores
+          </div>
+        </div>
+
+        {/* JSON config */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
           <button
             className="btn btn-secondary"
@@ -52,6 +68,7 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
           </div>
         </div>
 
+        {/* Audit log */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
           <button
             className="btn btn-secondary"
