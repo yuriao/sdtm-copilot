@@ -84,6 +84,7 @@ export default function App() {
             profile={profile}
             setProfile={setProfile}
             onNext={goNext}
+            parsedData={parsedData}
             onBack={goBack}
           />
         )}
@@ -96,6 +97,7 @@ export default function App() {
             setLlmResult={setLlmResult}
             setMappings={setMappings}
             onNext={goNext}
+            parsedData={parsedData}
             onBack={goBack}
           />
         )}
@@ -105,6 +107,7 @@ export default function App() {
             setMappings={setMappings}
             llmResult={llmResult}
             onNext={goNext}
+            parsedData={parsedData}
             onBack={goBack}
           />
         )}
@@ -115,6 +118,7 @@ export default function App() {
             validationResults={validationResults}
             setValidationResults={setValidationResults}
             onNext={goNext}
+            parsedData={parsedData}
             onBack={goBack}
           />
         )}
@@ -125,6 +129,7 @@ export default function App() {
             profile={profile}
             parsedData={parsedData}
             validationResults={validationResults}
+            parsedData={parsedData}
             onBack={goBack}
           />
         )}
