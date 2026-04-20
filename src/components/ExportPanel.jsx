@@ -1,5 +1,5 @@
 import React from 'react'
-import { exportMappingCSV, exportMappingJSON, exportAuditLog, exportMappedData } from '../utils/exporter'
+import { exportMappingCSV, exportMappingJSON, exportAuditLog, exportMappedData, exportDefineXML } from '../utils/exporter'
 
 export default function ExportPanel({ mappings, llmResult, profile, parsedData, validationResults, onBack }) {
   const domain = llmResult?.domain || 'unknown'
@@ -28,7 +28,8 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
       </div>
 
       <div className="export-btns">
-        {/* Mapped Data CSV — new */}
+
+        {/* Mapped Data CSV */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
           <button
             className="btn btn-primary"
@@ -39,6 +40,20 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
           </button>
           <div style={{ fontSize: '0.78rem', color: '#7f8c8d' }}>
             Original dataset with accepted columns renamed to SDTM variable names; unmapped columns preserved with <code>UNMAPPED_</code> prefix
+          </div>
+        </div>
+
+        {/* Define-XML */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 200 }}>
+          <button
+            className="btn btn-primary"
+            onClick={() => exportDefineXML(mappings, llmResult, parsedData, profile)}
+            disabled={accepted === 0}
+          >
+            🏥 Download Define-XML 2.0
+          </button>
+          <div style={{ fontSize: '0.78rem', color: '#7f8c8d' }}>
+            CDISC Define-XML 2.0 scaffold — ItemGroupDef, ItemDefs, codelists, origins. Open in Pinnacle 21 or conformance checkers.
           </div>
         </div>
 
@@ -80,6 +95,7 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
             Full audit trail: profiling, LLM reasoning, user decisions, validation
           </div>
         </div>
+
       </div>
 
       {accepted === 0 && (
@@ -98,7 +114,9 @@ export default function ExportPanel({ mappings, llmResult, profile, parsedData, 
       <div style={{ marginTop: 20, padding: 14, background: '#f0f4f8', borderRadius: 6, fontSize: '0.82rem', color: '#555' }}>
         <strong>Next steps:</strong> Use the JSON config with CDISC tools like{' '}
         <a href="https://www.cdisc.org/tools" target="_blank" rel="noreferrer" style={{ color: '#1a3a5c' }}>CDISC conformance checkers</a>{' '}
-        or import into your SAS/Python ETL pipeline. The audit log supports regulatory compliance documentation.
+        or import into your SAS/Python ETL pipeline. The Define-XML can be validated with{' '}
+        <a href="https://www.pinnacle21.com/community" target="_blank" rel="noreferrer" style={{ color: '#1a3a5c' }}>Pinnacle 21 Community</a>.
+        The audit log supports regulatory compliance documentation.
       </div>
     </div>
   )
