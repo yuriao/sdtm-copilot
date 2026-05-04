@@ -1,31 +1,10 @@
+import { CDISC_CT } from '../data/cdisc-ct.js'
+
 // ─── Controlled Terminology ───────────────────────────────────────────────────
-const CT = {
-  SEX: ['M', 'F', 'U', 'UNDIFFERENTIATED'],
-  RACE: [
-    'AMERICAN INDIAN OR ALASKA NATIVE',
-    'ASIAN',
-    'BLACK OR AFRICAN AMERICAN',
-    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER',
-    'WHITE',
-    'MULTIPLE',
-    'UNKNOWN',
-    'NOT REPORTED',
-  ],
-  ETHNIC: ['HISPANIC OR LATINO', 'NOT HISPANIC OR LATINO', 'NOT REPORTED', 'UNKNOWN'],
-  COUNTRY: null, // ISO 3166-1 alpha-3 — validated by length/pattern only
-  NY: ['Y', 'N'],
-  AESEV: ['MILD', 'MODERATE', 'SEVERE'],
-  OUT: [
-    'RECOVERED/RESOLVED',
-    'RECOVERING/RESOLVING',
-    'NOT RECOVERED/NOT RESOLVED',
-    'RECOVERED/RESOLVED WITH SEQUELAE',
-    'FATAL',
-    'UNKNOWN',
-  ],
-  AGEU: ['YEARS', 'MONTHS', 'WEEKS', 'DAYS', 'HOURS'],
-  ND: ['NOT DONE'],
-}
+// Derived from the shared CDISC_CT data: flatten { coded, decode }[] to coded[]
+const CT = Object.fromEntries(
+  Object.entries(CDISC_CT).map(([k, v]) => [k, Array.isArray(v) ? v.map(e => e.coded) : v])
+)
 
 // SDTM variable → codelist name
 const VAR_CODELIST = {
@@ -36,9 +15,11 @@ const VAR_CODELIST = {
   AESER: 'NY',
   AESEV: 'AESEV',
   AEOUT: 'OUT',
-  AEREL: null,     // sponsor-defined
+  AEREL: null,       // sponsor-defined
   AGEU: 'AGEU',
   LBSTAT: 'ND',
+  LBORRESU: 'LBORRESU',
+  LBSTRESU: 'LBORRESU',
 }
 
 // SDTM date/datetime/time variables

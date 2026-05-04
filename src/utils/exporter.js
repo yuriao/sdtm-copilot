@@ -1,3 +1,5 @@
+import { CDISC_CT } from '../data/cdisc-ct.js'
+
 /**
  * Convert array of objects to CSV string
  */
@@ -176,7 +178,7 @@ const SDTM_VAR_META = {
   LBDTC:    { domain: 'LB', label: 'Date/Time of Specimen Collection',   dataType: 'datetime', length: 19, role: 'Timing', required: true, origin: 'Collected' },
   LBSTRESC: { domain: 'LB', label: 'Character Result/Finding in Std Format', dataType: 'text', length: 200, role: 'Result Qualifier', required: false, origin: 'Derived' },
   LBSTRESN: { domain: 'LB', label: 'Numeric Result/Finding in Standard Units', dataType: 'float', length: 8, role: 'Result Qualifier', required: false, origin: 'Derived' },
-  LBSTRESU: { domain: 'LB', label: 'Standard Units',              dataType: 'text',    length: 20,  role: 'Variable Qualifier', required: false, origin: 'Assigned', codelist: 'LBSTRESU' },
+  LBSTRESU: { domain: 'LB', label: 'Standard Units',              dataType: 'text',    length: 20,  role: 'Variable Qualifier', required: false, origin: 'Assigned', codelist: 'LBORRESU' },
   LBSTAT:   { domain: 'LB', label: 'Completion Status',           dataType: 'text',    length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ND' },
 }
 
@@ -271,13 +273,21 @@ ${itemRefs}
       </def:leaf>
     </ItemGroupDef>`
 
-  // ── Codelists (stubs — real codes should come from CDISC NCI) ────────────
-  const codelistDefs = Array.from(codelists).map(cl => `
+  // ── Codelists ─────────────────────────────────────────────────────────────
+  const codelistDefs = Array.from(codelists).map(cl => {
+    const items = CDISC_CT[cl]
+    const itemsXml = Array.isArray(items)
+      ? items.map(({ coded, decode }) =>
+          `      <CodeListItem CodedValue="${xmlEscape(coded)}">
+        <Decode><TranslatedText xml:lang="en">${xmlEscape(decode)}</TranslatedText></Decode>
+      </CodeListItem>`
+        ).join('\n')
+      : `      <!-- ${cl}: validated by pattern (e.g. ISO 3166-1 alpha-3) -->`
+    return `
     <CodeList OID="CL.${cl}" Name="${cl}" DataType="text" def:StandardOID="STD.1">
-      <Description>
-        <TranslatedText xml:lang="en">${cl} — CDISC Controlled Terminology (stub; populate from NCI EVS)</TranslatedText>
-      </Description>
-    </CodeList>`).join('\n')
+${itemsXml}
+    </CodeList>`
+  }).join('\n')
 
   // ── Full Define-XML document ──────────────────────────────────────────────
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
