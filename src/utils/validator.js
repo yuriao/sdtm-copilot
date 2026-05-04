@@ -8,18 +8,18 @@ const CT = Object.fromEntries(
 
 // SDTM variable → codelist name
 const VAR_CODELIST = {
-  SEX: 'SEX',
-  RACE: 'RACE',
-  ETHNIC: 'ETHNIC',
-  COUNTRY: 'COUNTRY',
-  AESER: 'NY',
-  AESEV: 'AESEV',
-  AEOUT: 'OUT',
-  AEREL: null,       // sponsor-defined
-  AGEU: 'AGEU',
-  LBSTAT: 'ND',
-  LBORRESU: 'LBORRESU',
-  LBSTRESU: 'LBORRESU',
+  // DM
+  SEX: 'SEX', RACE: 'RACE', ETHNIC: 'ETHNIC', COUNTRY: 'COUNTRY', AGEU: 'AGEU',
+  // AE
+  AESER: 'NY', AESEV: 'AESEV', AEOUT: 'OUT', AEREL: null,
+  // LB
+  LBSTAT: 'ND', LBORRESU: 'LBORRESU', LBSTRESU: 'LBORRESU',
+  // VS
+  VSTESTCD: 'VSTESTCD', VSORRESU: 'VSORRESU', VSSTRESU: 'VSORRESU', VSSTAT: 'ND',
+  // CM
+  CMDOSU: 'CMDOSU', CMDOSFRQ: 'CMDOSFRQ', CMROUTE: 'ROUTE',
+  // EC
+  ECDOSU: 'CMDOSU', ECDOSFRQ: 'CMDOSFRQ', ECROUTE: 'ROUTE', ECSTAT: 'ND',
 }
 
 // SDTM date/datetime/time variables
@@ -27,26 +27,46 @@ const DATE_VARS = new Set([
   'RFSTDTC', 'RFENDTC', 'DTHDTC',
   'AESTDTC', 'AEENDTC',
   'LBDTC',
+  'VSDTC',
+  'CMSTDTC', 'CMENDTC',
+  'ECSTDTC', 'ECENDTC',
 ])
 
 // SDTM numeric variables
 const NUMERIC_VARS = new Set([
-  'AGE', 'AESEQ', 'LBSEQ', 'LBSTRESN',
+  'AGE',
+  'AESEQ',
+  'LBSEQ', 'LBSTRESN',
+  'VSSEQ', 'VSSTRESN',
+  'CMSEQ', 'CMDOSE',
+  'ECSEQ', 'ECDOSE',
 ])
 
-// SDTM required variables per domain
+// SDTM required and recommended variables per domain
 const DOMAIN_RULES = {
   DM: {
-    required: ['STUDYID', 'DOMAIN', 'USUBJID', 'SUBJID', 'RFSTDTC', 'SEX', 'RACE', 'COUNTRY'],
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'SUBJID', 'RFSTDTC', 'SEX', 'RACE', 'COUNTRY'],
     recommended: ['AGE', 'AGEU', 'ETHNIC', 'ARM', 'ARMCD', 'ACTARM', 'SITEID', 'DTHDTC', 'DTHFL'],
   },
   AE: {
-    required: ['STUDYID', 'DOMAIN', 'USUBJID', 'AESEQ', 'AETERM', 'AESTDTC'],
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'AESEQ', 'AETERM', 'AESTDTC'],
     recommended: ['AESER', 'AESEV', 'AEREL', 'AEOUT', 'AEENDTC', 'AETOXGR', 'AEDECOD', 'AEBODSYS'],
   },
   LB: {
-    required: ['STUDYID', 'DOMAIN', 'USUBJID', 'LBSEQ', 'LBTESTCD', 'LBTEST', 'LBORRES', 'LBDTC'],
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'LBSEQ', 'LBTESTCD', 'LBTEST', 'LBORRES', 'LBDTC'],
     recommended: ['LBORRESU', 'LBSTRESC', 'LBSTRESN', 'LBSTRESU', 'LBNRIND', 'VISIT', 'LBSTAT'],
+  },
+  VS: {
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'VSSEQ', 'VSTESTCD', 'VSTEST', 'VSORRES', 'VSDTC'],
+    recommended: ['VSORRESU', 'VSSTRESC', 'VSSTRESN', 'VSSTRESU', 'VSSTAT', 'VISIT', 'VISITNUM'],
+  },
+  CM: {
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'CMSEQ', 'CMTRT'],
+    recommended: ['CMDECOD', 'CMCAT', 'CMSTDTC', 'CMENDTC', 'CMDOSE', 'CMDOSU', 'CMDOSFRQ', 'CMROUTE'],
+  },
+  EC: {
+    required:    ['STUDYID', 'DOMAIN', 'USUBJID', 'ECSEQ', 'ECTRT'],
+    recommended: ['ECDOSE', 'ECDOSU', 'ECDOSFRQ', 'ECROUTE', 'ECSTDTC', 'ECENDTC', 'ECSTAT'],
   },
 }
 
@@ -83,7 +103,7 @@ function summarise(badRows, total, fieldName) {
 /**
  * Full SDTM validation.
  * @param {Array}  mappings    - accepted/rejected mapping objects
- * @param {string} domain      - 'DM' | 'AE' | 'LB'
+ * @param {string} domain      - 'DM' | 'AE' | 'LB' | 'VS' | 'CM' | 'EC'
  * @param {Object} parsedData  - { rows: [{col: val, ...}], columns: [...] }
  * @returns {Array} [{severity, category, message, detail?}]
  */
@@ -212,8 +232,8 @@ export function validateMappings(mappings, domain, parsedData) {
     }
   }
 
-  // ── 10. Sequence number uniqueness (AESEQ / LBSEQ within USUBJID) ─────────
-  for (const seqVar of ['AESEQ', 'LBSEQ']) {
+  // ── 10. Sequence number uniqueness within USUBJID ────────────────────────
+  for (const seqVar of ['AESEQ', 'LBSEQ', 'VSSEQ', 'CMSEQ', 'ECSEQ']) {
     if (!assignedVars.includes(seqVar)) continue
     const seqCol = sdtmToSource[seqVar]
     const subjCol = sdtmToSource['USUBJID']
@@ -269,9 +289,10 @@ export function validateMappings(mappings, domain, parsedData) {
     }
   }
 
-  // ── 13. LBTESTCD length ≤ 8 ───────────────────────────────────────────────
-  if (assignedVars.includes('LBTESTCD')) {
-    const srcCol = sdtmToSource['LBTESTCD']
+  // ── 13. Short test-code variables must be ≤ 8 characters ─────────────────
+  for (const shortVar of ['LBTESTCD', 'VSTESTCD']) {
+    if (!assignedVars.includes(shortVar)) continue
+    const srcCol = sdtmToSource[shortVar]
     const badRows = []
     rows.forEach((row, i) => {
       const val = (row[srcCol] || '').toString().trim()
@@ -279,7 +300,7 @@ export function validateMappings(mappings, domain, parsedData) {
     })
     if (badRows.length > 0) {
       push('ERROR', 'Variable Length',
-        `LBTESTCD values must be ≤ 8 characters`,
+        `${shortVar} values must be ≤ 8 characters`,
         summarise(badRows, n, srcCol))
     }
   }
@@ -288,6 +309,8 @@ export function validateMappings(mappings, domain, parsedData) {
   const datePairs = [
     ['RFSTDTC', 'RFENDTC', 'Reference start must be ≤ reference end'],
     ['AESTDTC', 'AEENDTC', 'AE start date must be ≤ AE end date'],
+    ['CMSTDTC', 'CMENDTC', 'CM start date must be ≤ CM end date'],
+    ['ECSTDTC', 'ECENDTC', 'EC start date must be ≤ EC end date'],
   ]
   for (const [startVar, endVar, msg] of datePairs) {
     if (!assignedVars.includes(startVar) || !assignedVars.includes(endVar)) continue

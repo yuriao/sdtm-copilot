@@ -139,7 +139,7 @@ export function exportMappedData(parsedData, mappings, domain) {
 // ─── Define-XML 2.0 ──────────────────────────────────────────────────────────
 
 /**
- * CDISC SDTM variable metadata catalogue for DM, AE, LB domains.
+ * CDISC SDTM variable metadata catalogue for DM, AE, LB, VS, CM, EC domains.
  * Covers required + common recommended variables.
  * dataType: text | integer | float | date | datetime | time
  */
@@ -180,6 +180,48 @@ const SDTM_VAR_META = {
   LBSTRESN: { domain: 'LB', label: 'Numeric Result/Finding in Standard Units', dataType: 'float', length: 8, role: 'Result Qualifier', required: false, origin: 'Derived' },
   LBSTRESU: { domain: 'LB', label: 'Standard Units',              dataType: 'text',    length: 20,  role: 'Variable Qualifier', required: false, origin: 'Assigned', codelist: 'LBORRESU' },
   LBSTAT:   { domain: 'LB', label: 'Completion Status',           dataType: 'text',    length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ND' },
+  // ── VS ────────────────────────────────────────────────────────────────────
+  VSSEQ:    { domain: 'VS', label: 'Sequence Number',             dataType: 'integer', length: 8,   role: 'Identifier',  required: true,  origin: 'Assigned' },
+  VSTESTCD: { domain: 'VS', label: 'Vital Signs Test Short Name', dataType: 'text',    length: 8,   role: 'Topic',       required: true,  origin: 'Assigned', codelist: 'VSTESTCD' },
+  VSTEST:   { domain: 'VS', label: 'Vital Signs Test Name',       dataType: 'text',    length: 40,  role: 'Synonym Qualifier', required: true,  origin: 'Assigned' },
+  VSORRES:  { domain: 'VS', label: 'Result or Finding in Original Units', dataType: 'text', length: 200, role: 'Result Qualifier', required: true, origin: 'Collected' },
+  VSORRESU: { domain: 'VS', label: 'Original Units',              dataType: 'text',    length: 40,  role: 'Variable Qualifier', required: false, origin: 'Collected', codelist: 'VSORRESU' },
+  VSSTRESC: { domain: 'VS', label: 'Character Result in Std Format',     dataType: 'text',    length: 200, role: 'Result Qualifier', required: false, origin: 'Derived' },
+  VSSTRESN: { domain: 'VS', label: 'Numeric Result in Standard Units',   dataType: 'float',   length: 8,   role: 'Result Qualifier', required: false, origin: 'Derived' },
+  VSSTRESU: { domain: 'VS', label: 'Standard Units',              dataType: 'text',    length: 40,  role: 'Variable Qualifier', required: false, origin: 'Assigned', codelist: 'VSORRESU' },
+  VSSTAT:   { domain: 'VS', label: 'Completion Status',           dataType: 'text',    length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ND' },
+  VSDTC:    { domain: 'VS', label: 'Date/Time of Measurements',   dataType: 'datetime', length: 19, role: 'Timing',      required: true,  origin: 'Collected' },
+  // ── CM ────────────────────────────────────────────────────────────────────
+  CMSEQ:    { domain: 'CM', label: 'Sequence Number',             dataType: 'integer', length: 8,   role: 'Identifier',  required: true,  origin: 'Assigned' },
+  CMTRT:    { domain: 'CM', label: 'Reported Name of Drug, Medical Device, or Therapy', dataType: 'text', length: 200, role: 'Topic', required: true, origin: 'Collected' },
+  CMDECOD:  { domain: 'CM', label: 'Standardized Medication Name', dataType: 'text',   length: 200, role: 'Synonym Qualifier', required: false, origin: 'Assigned' },
+  CMCAT:    { domain: 'CM', label: 'Category for Medication',     dataType: 'text',    length: 200, role: 'Grouping Qualifier', required: false, origin: 'Assigned' },
+  CMSTDTC:  { domain: 'CM', label: 'Start Date/Time of Medication', dataType: 'datetime', length: 19, role: 'Timing', required: false, origin: 'Collected' },
+  CMENDTC:  { domain: 'CM', label: 'End Date/Time of Medication', dataType: 'datetime', length: 19, role: 'Timing',    required: false, origin: 'Collected' },
+  CMDOSE:   { domain: 'CM', label: 'Dose per Administration',     dataType: 'float',   length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected' },
+  CMDOSU:   { domain: 'CM', label: 'Units of Dose',               dataType: 'text',    length: 40,  role: 'Variable Qualifier', required: false, origin: 'Collected', codelist: 'CMDOSU' },
+  CMDOSFRQ: { domain: 'CM', label: 'Dosing Frequency per Interval', dataType: 'text',  length: 40,  role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'CMDOSFRQ' },
+  CMROUTE:  { domain: 'CM', label: 'Route of Administration',     dataType: 'text',    length: 200, role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ROUTE' },
+  // ── EC ────────────────────────────────────────────────────────────────────
+  ECSEQ:    { domain: 'EC', label: 'Sequence Number',             dataType: 'integer', length: 8,   role: 'Identifier',  required: true,  origin: 'Assigned' },
+  ECTRT:    { domain: 'EC', label: 'Name of Treatment',           dataType: 'text',    length: 200, role: 'Topic',       required: true,  origin: 'Collected' },
+  ECDOSE:   { domain: 'EC', label: 'Dose per Administration',     dataType: 'float',   length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected' },
+  ECDOSU:   { domain: 'EC', label: 'Units of Dose',               dataType: 'text',    length: 40,  role: 'Variable Qualifier', required: false, origin: 'Collected', codelist: 'CMDOSU' },
+  ECDOSFRQ: { domain: 'EC', label: 'Dosing Frequency',            dataType: 'text',    length: 40,  role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'CMDOSFRQ' },
+  ECROUTE:  { domain: 'EC', label: 'Route of Administration',     dataType: 'text',    length: 200, role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ROUTE' },
+  ECSTDTC:  { domain: 'EC', label: 'Start Date/Time of Treatment', dataType: 'datetime', length: 19, role: 'Timing',    required: false, origin: 'Collected' },
+  ECENDTC:  { domain: 'EC', label: 'End Date/Time of Treatment',  dataType: 'datetime', length: 19, role: 'Timing',     required: false, origin: 'Collected' },
+  ECSTAT:   { domain: 'EC', label: 'Completion Status',           dataType: 'text',    length: 8,   role: 'Record Qualifier', required: false, origin: 'Collected', codelist: 'ND' },
+}
+
+// Per-domain metadata for Define-XML ItemGroupDef generation
+const DOMAIN_META = {
+  DM: { repeating: 'No',  sdtmClass: 'SPECIAL PURPOSE', structure: 'One record per subject',                                         description: 'Demographics' },
+  AE: { repeating: 'Yes', sdtmClass: 'EVENTS',          structure: 'One record per adverse event per subject',                       description: 'Adverse Events' },
+  LB: { repeating: 'Yes', sdtmClass: 'FINDINGS',        structure: 'One record per lab test per visit per subject',                  description: 'Laboratory Test Results' },
+  VS: { repeating: 'Yes', sdtmClass: 'FINDINGS',        structure: 'One record per vital sign measurement per time point per subject', description: 'Vital Signs' },
+  CM: { repeating: 'Yes', sdtmClass: 'INTERVENTIONS',   structure: 'One record per medication treatment per subject',                description: 'Concomitant Medications' },
+  EC: { repeating: 'Yes', sdtmClass: 'INTERVENTIONS',   structure: 'One record per collected exposure record per subject',           description: 'Exposure as Collected' },
 }
 
 function xmlEscape(s) {
@@ -253,19 +295,21 @@ export function exportDefineXML(mappings, llmResult, parsedData, profile) {
     `      <ItemRef ItemOID="IT.${domain}.${v.sdtmName}" OrderNumber="${v.idx}" Mandatory="${v.meta.required ? 'Yes' : 'No'}" Role="${xmlEscape(v.meta.role)}" />`
   ).join('\n')
 
+  const dm = DOMAIN_META[domain] || { repeating: 'Yes', sdtmClass: 'FINDINGS', structure: 'One record per subject', description: domain }
+
   const itemGroupDef = `
     <ItemGroupDef OID="IG.${domain}"
                   Name="${domain}"
-                  Repeating="${domain === 'DM' ? 'No' : 'Yes'}"
+                  Repeating="${dm.repeating}"
                   IsReferenceData="No"
                   SASDatasetName="${datasetName}"
                   Domain="${domain}"
                   Purpose="Tabulation"
-                  def:Structure="${domain === 'DM' ? 'One record per subject' : domain === 'AE' ? 'One record per adverse event per subject' : 'One record per lab test per visit per subject'}"
-                  def:Class="${domain === 'LB' ? 'FINDINGS' : 'EVENTS'}"
+                  def:Structure="${xmlEscape(dm.structure)}"
+                  def:Class="${dm.sdtmClass}"
                   def:ArchiveLocationID="LF.${domain}">
       <Description>
-        <TranslatedText xml:lang="en">${domain === 'DM' ? 'Demographics' : domain === 'AE' ? 'Adverse Events' : 'Laboratory Test Results'}</TranslatedText>
+        <TranslatedText xml:lang="en">${xmlEscape(dm.description)}</TranslatedText>
       </Description>
 ${itemRefs}
       <def:leaf ID="LF.${domain}" xlink:href="${domain.toLowerCase()}.xpt">

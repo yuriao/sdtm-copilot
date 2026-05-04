@@ -54,6 +54,73 @@ export const CDISC_CT = {
   ND: [
     { coded: 'NOT DONE', decode: 'Not Done' },
   ],
+  // Vital Signs test codes (CDISC VSTESTCD codelist)
+  VSTESTCD: [
+    { coded: 'SYSBP',  decode: 'Systolic Blood Pressure' },
+    { coded: 'DIABP',  decode: 'Diastolic Blood Pressure' },
+    { coded: 'MAP',    decode: 'Mean Arterial Pressure' },
+    { coded: 'PULSE',  decode: 'Pulse Rate' },
+    { coded: 'RESP',   decode: 'Respiratory Rate' },
+    { coded: 'TEMP',   decode: 'Temperature' },
+    { coded: 'WEIGHT', decode: 'Weight' },
+    { coded: 'HEIGHT', decode: 'Height' },
+    { coded: 'BMI',    decode: 'Body Mass Index' },
+    { coded: 'OXYSAT', decode: 'Oxygen Saturation' },
+  ],
+  // Vital signs units (CDISC VSORRESU codelist, shared by VSSTRESU)
+  VSORRESU: [
+    { coded: 'mmHg',        decode: 'Millimeters of Mercury' },
+    { coded: 'beats/min',   decode: 'Beats per Minute' },
+    { coded: 'breaths/min', decode: 'Breaths per Minute' },
+    { coded: 'C',           decode: 'Degrees Celsius' },
+    { coded: 'F',           decode: 'Degrees Fahrenheit' },
+    { coded: 'kg',          decode: 'Kilogram' },
+    { coded: 'lb',          decode: 'Pound' },
+    { coded: 'cm',          decode: 'Centimeter' },
+    { coded: 'in',          decode: 'Inch' },
+    { coded: 'kg/m2',       decode: 'Kilograms per Square Meter' },
+    { coded: '%',           decode: 'Percent' },
+  ],
+  // Dose units (CDISC CMDOSU codelist, shared by ECDOSU)
+  CMDOSU: [
+    { coded: 'mg',    decode: 'Milligram' },
+    { coded: 'g',     decode: 'Gram' },
+    { coded: 'mcg',   decode: 'Microgram' },
+    { coded: 'mg/kg', decode: 'Milligrams per Kilogram' },
+    { coded: 'mg/m2', decode: 'Milligrams per Square Meter' },
+    { coded: 'mL',    decode: 'Milliliter' },
+    { coded: 'L',     decode: 'Liter' },
+    { coded: 'IU',    decode: 'International Unit' },
+    { coded: 'units', decode: 'Units' },
+  ],
+  // Dosing frequency (CDISC CMDOSFRQ codelist, shared by ECDOSFRQ)
+  CMDOSFRQ: [
+    { coded: 'QD',   decode: 'Every Day' },
+    { coded: 'BID',  decode: 'Twice Daily' },
+    { coded: 'TID',  decode: 'Three Times Daily' },
+    { coded: 'QID',  decode: 'Four Times Daily' },
+    { coded: 'Q12H', decode: 'Every 12 Hours' },
+    { coded: 'Q8H',  decode: 'Every 8 Hours' },
+    { coded: 'Q6H',  decode: 'Every 6 Hours' },
+    { coded: 'QW',   decode: 'Every Week' },
+    { coded: 'Q2W',  decode: 'Every 2 Weeks' },
+    { coded: 'ONCE', decode: 'One Time Only' },
+    { coded: 'PRN',  decode: 'As Needed' },
+  ],
+  // Route of administration (CDISC ROUTE codelist, shared by CM and EC)
+  ROUTE: [
+    { coded: 'ORAL',          decode: 'Oral' },
+    { coded: 'INTRAVENOUS',   decode: 'Intravenous' },
+    { coded: 'SUBCUTANEOUS',  decode: 'Subcutaneous' },
+    { coded: 'INTRAMUSCULAR', decode: 'Intramuscular' },
+    { coded: 'TOPICAL',       decode: 'Topical' },
+    { coded: 'INHALATION',    decode: 'Inhalation' },
+    { coded: 'INTRANASAL',    decode: 'Intranasal' },
+    { coded: 'TRANSDERMAL',   decode: 'Transdermal' },
+    { coded: 'INTRATHECAL',   decode: 'Intrathecal' },
+    { coded: 'OPHTHALMIC',    decode: 'Ophthalmic' },
+    { coded: 'OTIC',          decode: 'Otic' },
+  ],
   // Common lab units from CDISC LBORRESU codelist (shared by LBSTRESU)
   LBORRESU: [
     { coded: '%',        decode: 'Percent' },

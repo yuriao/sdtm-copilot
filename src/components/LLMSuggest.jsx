@@ -39,7 +39,7 @@ export default function LLMSuggest({ apiKey, profile, parsedData, llmResult, set
     <div className="card">
       <h2>Step 4 — LLM Mapping Suggestions</h2>
       <p style={{ color: '#555', marginBottom: 18, fontSize: '0.93rem' }}>
-        Kimi will analyze your column schema and suggest SDTM variable mappings for DM, AE, or LB domains.
+        Kimi will analyze your column schema and suggest SDTM variable mappings for DM, AE, LB, VS, CM, or EC domains.
       </p>
 
       {/* If we already have a result, show a skip banner */}

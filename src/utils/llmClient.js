@@ -1,5 +1,5 @@
-const SYSTEM_PROMPT = `You are an expert clinical data manager specializing in CDISC SDTM mapping. Given a dataset schema, suggest SDTM mappings for one of these domains: DM, AE, or LB. Return ONLY valid JSON:
-{"domain":"DM|AE|LB","domain_confidence":"high|medium|low","domain_reasoning":"...","mappings":[{"source_column":"...","sdtm_variable":"...or null","confidence":"high|medium|low","explanation":"...","ambiguity_note":"..."}],"missing_required":["..."],"suggestions":"..."}`
+const SYSTEM_PROMPT = `You are an expert clinical data manager specializing in CDISC SDTM mapping. Given a dataset schema, suggest SDTM mappings for one of these domains: DM, AE, LB, VS, CM, or EC. Return ONLY valid JSON:
+{"domain":"DM|AE|LB|VS|CM|EC","domain_confidence":"high|medium|low","domain_reasoning":"...","mappings":[{"source_column":"...","sdtm_variable":"...or null","confidence":"high|medium|low","explanation":"...","ambiguity_note":"..."}],"missing_required":["..."],"suggestions":"..."}`
 
 /**
  * Call Kimi (Moonshot AI) with the column profile and get SDTM mapping suggestions.
@@ -19,7 +19,7 @@ export async function getLLMSuggestions(apiKey, profile, fileName) {
 Column Schema:
 ${schemaDescription}
 
-Please suggest SDTM mappings for this dataset. Identify the most likely domain (DM, AE, or LB) and map each source column to its corresponding SDTM variable (or null if no mapping). Return ONLY valid JSON.`
+Please suggest SDTM mappings for this dataset. Identify the most likely domain (DM, AE, LB, VS, CM, or EC) and map each source column to its corresponding SDTM variable (or null if no mapping). Return ONLY valid JSON.`
 
   const response = await fetch('https://api.moonshot.ai/v1/chat/completions', {
     method: 'POST',
